@@ -108,7 +108,7 @@ const refreshToken = async ( { refreshToken }: { refreshToken: string} ) => {
     config.jwt.jwt_expire_in as StringValue
   );
 
-  return newAccessToken 
+  return {newAccessToken} 
 }
 
 //forget password
@@ -119,7 +119,7 @@ const forgetPasswordToDB = async (email: string) => {
   }
 
   //send mail
-  const otp = generateOTP();
+  const otp = generateOTP(6);
   const value = {
     otp,
     email: isExistUser.email,
@@ -131,7 +131,7 @@ const forgetPasswordToDB = async (email: string) => {
   const authentication = {
     oneTimeCode: otp,
     expireAt: new Date(Date.now() + 5 * 60000),
-    isExistUser: true,
+    isResetPassword: true,
   };
   await User.findOneAndUpdate({ email }, { $set: { authentication } });
 };
@@ -166,7 +166,7 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
   let message;
   let data;
 
-  if (isExistUser.authentication.isResetPassword) {
+  if (!isExistUser.authentication.isResetPassword) {
     await User.findOneAndUpdate(
       { _id: isExistUser._id },
       { verified: true, authentication: { oneTimeCode: null, expireAt: null } }

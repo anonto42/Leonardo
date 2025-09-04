@@ -7,7 +7,11 @@ import { UserService } from './user.service';
 
 const createUser = catchAsync(
   async (req: Request | any, res: Response, next: NextFunction) => {
+    const image = getSingleFilePath(req.files, 'image');
     const { ...userData } = req.body;
+
+    userData.image = image;
+
     const result = await UserService.createUserToDB(userData);
 
     sendResponse(res, {

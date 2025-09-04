@@ -28,6 +28,10 @@ const userSchema = new Schema<IUser, UserModal>(
         'Please provide a valid email address' 
       ],
     },
+    contact:{
+      type: String,
+      default: '',
+    },
     password: {
       type: String,
       required: true,
@@ -36,7 +40,7 @@ const userSchema = new Schema<IUser, UserModal>(
     },
     image: {
       type: String,
-      default: 'https://i.ibb.co/z5YHLV9/profile.png',
+      default: '',
     },
     status: {
       type: String,

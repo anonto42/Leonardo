@@ -26,6 +26,7 @@ router
 router
   .route('/')
   .post(
+    fileUploadHandler(),
     validateRequest(UserValidation.createUserZodSchema),
     UserController.createUser
   );
