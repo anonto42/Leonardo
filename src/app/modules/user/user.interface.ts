@@ -6,8 +6,14 @@ export type IUser = {
   role: USER_ROLES;
   contact: string;
   email: string;
+  age: number;
+  occupation: string;
+  gender: string;
+  personality: string;
+  nationality: string;
+  completedTasks: number;
+  coin: number;
   password: string;
-  location: string;
   image?: string;
   status: STATUS;
   verified: boolean;

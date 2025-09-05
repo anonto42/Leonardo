@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { StatusCodes } from 'http-status-codes';
 import { model, Schema } from 'mongoose';
 import config from '../../../config';
-import { STATUS, USER_ROLES } from '../../../enums/user';
+import { GENDER, STATUS, USER_ROLES } from '../../../enums/user';
 import ApiError from '../../../errors/ApiError';
 import { IUser, UserModal } from './user.interface';
 
@@ -11,6 +11,7 @@ const userSchema = new Schema<IUser, UserModal>(
     name: {
       type: String,
       required: true,
+      default: "Anonymous User",
     },
     role: {
       type: String,
@@ -30,13 +31,44 @@ const userSchema = new Schema<IUser, UserModal>(
     },
     contact:{
       type: String,
-      default: '',
+      default: "Not provided",
+    },
+    age:{
+      type: Number,
+      default: null,
+      min: 0,
+      max: 120,
+    },
+    occupation:{
+      type: String,
+      default: "Unemployed",
+    },
+    gender:{
+      type: String,
+      enum: Object.values(GENDER),
+      default: GENDER.OTHER,
+    },
+    personality:{
+      type: String,
+      default: "Friendly",
+    },
+    nationality:{
+      type: String,
+      default: "Not specified",
     },
     password: {
       type: String,
       required: true,
       select: 0,
       minlength: 8,
+    },
+    completedTasks:{
+      type: Number,
+      default: 0
+    },
+    coin:{
+      type: Number,
+      default: 1000,
     },
     image: {
       type: String,

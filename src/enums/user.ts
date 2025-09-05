@@ -6,5 +6,12 @@ export enum USER_ROLES {
 export enum STATUS {
   ACTIVE = 'ACTIVE',
   DELETED = 'DELETED',
-  BLOCKED = 'BLOCKED'
+  BLOCKED = 'BLOCKED',
+  SUSPENDED = 'SUSPENDED',
+}
+
+export enum GENDER {
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'other'
 }
