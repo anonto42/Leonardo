@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { StatusCodes } from 'http-status-codes';
-import { model, Schema } from 'mongoose';
+import { Model, model, Schema } from 'mongoose';
 import config from '../../../config';
 import { GENDER, STATUS, USER_ROLES } from '../../../enums/user';
 import ApiError from '../../../errors/ApiError';
@@ -98,12 +98,15 @@ const userSchema = new Schema<IUser, UserModal>(
       },
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
 //exist user check
 userSchema.statics.isExistUserById = async (id: string) => {
-  const isExist = await User.findById(id);
+  const isExist = await User.exists({_id: id});
   return isExist;
 };
 
@@ -163,4 +166,4 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-export const User = model<IUser, UserModal>('User', userSchema);
+export const User: Model<IUser> = model<IUser, UserModal>('User', userSchema);
