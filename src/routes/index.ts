@@ -4,6 +4,7 @@ import { UserRoutes } from '../app/modules/user/user.route';
 import { TaskRoutes } from '../app/modules/task/task.route';
 import { AdminRoutes } from '../app/modules/admin/admin.route';
 import { CategoryRoutes } from '../app/modules/category/category.route';
+import { NotificationRoutes } from '../app/modules/notifications/notification.route';
 const router = express.Router();
 
 const apiRoutes = [
@@ -26,6 +27,10 @@ const apiRoutes = [
   {
     path: '/category',
     route: CategoryRoutes,
+  },
+  {
+    path: '/notifications',
+    route: NotificationRoutes
   }
 ];
 
