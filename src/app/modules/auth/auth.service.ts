@@ -22,7 +22,10 @@ import ms, { StringValue } from "ms";
 //login
 const loginUserFromDB = async (payload: ILoginData) => {
   const { email, password } = payload;
-  const isExistUser = await User.findOne({ email }).select('+password');
+  const isExistUser = await User
+    .findOne({ email })
+    .select('+password -role -createdAt -updatedAt -status -coin -completedTasks')
+    .lean();
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
