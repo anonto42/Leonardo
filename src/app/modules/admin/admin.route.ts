@@ -46,5 +46,28 @@ router
     AdminController.updateUserStatus
   );
 
+router
+  .route('/condition')
+  .get(
+    auth( USER_ROLES.USER, USER_ROLES.ADMIN ),
+    AdminController.getConditonController
+  )
+  .patch(
+    auth( USER_ROLES.ADMIN ),
+    validateRequest( AdminValidation.createConditionStatusZodSchema ),
+    AdminController.createConditonController
+  );
+
+router
+  .route('/policy')
+  .get(
+    auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+    AdminController.getPolicyontroller
+  )
+  .patch(
+    auth( USER_ROLES.ADMIN ),
+    validateRequest( AdminValidation.createConditionStatusZodSchema ),
+    AdminController.createPolicyController
+  );
 
 export const AdminRoutes = router;

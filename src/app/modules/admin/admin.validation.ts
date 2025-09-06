@@ -31,8 +31,17 @@ const updateUserStatusZodSchema = z.object({
   }).strict().optional(),
 })
 
+const createConditionStatusZodSchema = z.object({
+  params: z.object({}).strict(),
+  query: z.object({}).strict().optional(),
+  body: z.object({
+    data: z.string({ required_error: "You must give the data!"})
+  }).strict().optional(),
+})
+
 export const AdminValidation = {
   allUsersZodSchema,
   getUserZodSchema,
-  updateUserStatusZodSchema
+  updateUserStatusZodSchema,
+  createConditionStatusZodSchema
 };

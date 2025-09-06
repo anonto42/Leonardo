@@ -3,6 +3,7 @@ import ApiError from '../../../errors/ApiError';
 import { User } from '../user/user.model';
 import { TGetAllUsers } from './admin.type';
 import { STATUS, USER_ROLES } from '../../../enums/user';
+import { Condition } from '../conditionAndPolicys/conditionsAndpolicy.modle';
 
 const allUsers = async (
   { page = 1, limit = 10 }: TGetAllUsers
@@ -96,10 +97,39 @@ const deleteUser = async (
     }
   };
 }
+
+const conditionCreate = async ( 
+  payload: string
+) => {
+
+  const condition = await Condition.findOneAndUpdate({type: "TERMS" }, { content: payload}, { new: true }).lean();
+
+  if (!condition) {
+    await Condition.create({type: "TERMS",content:payload});
+  }
+
+  return "DONE"
+}
+
+const policyCreate = async ( 
+  payload: string
+) => {
+
+  const condition = await Condition.findOneAndUpdate({type: "POLICY" }, { content: payload}, { new: true }).lean();
+
+  if (!condition) {
+    await Condition.create({type: "POLICY",content:payload});
+  }
+
+  return "DONE"
+}
+
+const getCondition = async () => await Condition.findOne({type: "TERMS"}).select("content -_id").lean().exec();
+const getPolicy = async () => await Condition.findOne({type: "POLICY"}).select("content -_id").lean().exec();
  
 export const AdminService = {
-  allUsers,
-  getUserById,
+  allUsers, getPolicy,
+  getUserById, policyCreate,
   updateUserStatus: setUserStatus,
-  deleteUser
+  deleteUser, getCondition, conditionCreate,
 };

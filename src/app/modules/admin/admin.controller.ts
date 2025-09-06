@@ -41,7 +41,7 @@ const getUserController = catchAsync(async (
   });
 })
 
-const updateUserStatus = async (
+const updateUserStatus = catchAsync(async (
   req: Request, 
   res: Response
 ) => {
@@ -56,9 +56,9 @@ const updateUserStatus = async (
     message: `User status updated to ${status}`,
     data: user,
   });
-}
+})
 
-const deleteUserController = async (
+const deleteUserController = catchAsync(async (
   req: Request, 
   res: Response
 ) => {
@@ -73,11 +73,79 @@ const deleteUserController = async (
     message: "Successfully deleted user!",
     data: user,
   });
-}
+})
+
+const createConditonController = catchAsync(async (
+  req: Request, 
+  res: Response
+) => {
+  
+  const data = req.body.data;
+
+  const user = await AdminService.conditionCreate(data);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Successfull!",
+    data: user,
+  });
+})
+
+const getConditonController = catchAsync(async (
+  req: Request, 
+  res: Response
+) => {
+
+  const user = await AdminService.getCondition();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Successfully get condition!",
+    data: user,
+  });
+})
+
+const createPolicyController = catchAsync(async (
+  req: Request, 
+  res: Response
+) => {
+  
+  const data = req.body.data;
+
+  const user = await AdminService.policyCreate(data);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Successfull!",
+    data: user,
+  });
+})
+
+const getPolicyontroller = catchAsync(async (
+  req: Request, 
+  res: Response
+) => {
+
+  const user = await AdminService.getPolicy();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Successfully get condition!",
+    data: user,
+  });
+})
 
 export const AdminController = { 
   getUsersController,
   getUserController,
   updateUserStatus,
-  deleteUserController
+  deleteUserController,
+  createConditonController,
+  getConditonController,
+  createPolicyController,
+  getPolicyontroller
 };
