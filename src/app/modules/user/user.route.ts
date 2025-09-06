@@ -13,14 +13,16 @@ router
   .patch(
     auth(USER_ROLES.ADMIN, USER_ROLES.USER),
     fileUploadHandler(),
-    (req: Request, res: Response, next: NextFunction) => {
-      if (req.body.data) {
-        req.body = UserValidation.updateUserZodSchema.parse(
-          JSON.parse(req.body.data)
-        );
-      }
-      return UserController.updateProfile(req, res, next);
-    }
+    // (req: Request, res: Response, next: NextFunction) => {
+    //   if (req.body.data) {
+    //     req.body = UserValidation.updateUserZodSchema.parse(
+    //       JSON.parse(req.body.data)
+    //     );
+    //   }
+    //   return UserController.updateProfile(req, res, next);
+    // }
+    validateRequest(UserValidation.updateUserZodSchema),
+    UserController.updateProfile
   );
 
 router

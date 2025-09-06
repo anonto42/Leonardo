@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { GENDER } from '../../../enums/user';
 
 const createUserZodSchema = z.object({
   body: z.object({
@@ -11,12 +12,18 @@ const createUserZodSchema = z.object({
 });
 
 const updateUserZodSchema = z.object({
-  name: z.string().optional(),
-  contact: z.string().optional(),
-  email: z.string().optional(),
-  password: z.string().optional(),
-  location: z.string().optional(),
-  image: z.string().optional(),
+  body: z.object({
+    name: z.string().optional(),
+    age: z.coerce.number().optional(),
+    gender: z.enum([GENDER.FEMALE,GENDER.MALE,GENDER.OTHER], {
+      errorMap: () => ({ message: "Gender must be MALE, FEMALE, or OTHER" }),
+    }).optional(),
+    contact: z.string().optional(),
+    occupation: z.string().optional(),
+    nationality:  z.string().optional(),
+    personality: z.string().optional(),
+    image: z.string().optional(),
+  }).strict()
 });
 
 export const UserValidation = {
