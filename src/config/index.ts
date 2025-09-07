@@ -30,5 +30,6 @@ export default {
   redis:{
     redis_ip: process.env.REDIS_IP_ADDRESS,
     redis_port: process.env.REDIS_PORT
-  }
+  },
+  fire_base_service_account: process.env.FIREBASE_BASS_64
 };
