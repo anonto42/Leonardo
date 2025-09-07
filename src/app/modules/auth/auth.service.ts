@@ -21,7 +21,7 @@ import ms, { StringValue } from "ms";
 
 //login
 const loginUserFromDB = async (payload: ILoginData) => {
-  const { email, password } = payload;
+  const { email, password,fmToken } = payload;
   const isExistUser = await User
     .findOne({ email })
     .select('+password -createdAt -updatedAt -status -coin -completedTasks')
@@ -76,6 +76,12 @@ const loginUserFromDB = async (payload: ILoginData) => {
     expireAt: expireAt
   })
   
+  await User.findByIdAndUpdate(
+    isExistUser._id,
+    {
+      fmToken
+    }
+  )
   isExistUser.password = '';
   isExistUser.authentication = undefined;
 

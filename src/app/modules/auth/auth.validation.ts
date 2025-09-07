@@ -11,6 +11,7 @@ const createLoginZodSchema = z.object({
   body: z.object({
     email: z.string({ required_error: 'Email is required' }),
     password: z.string({ required_error: 'Password is required' }),
+    fmToken: z.string({ required_error: "You must give the FireBase fm token!"})
   }),
 });
 
