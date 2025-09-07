@@ -12,6 +12,7 @@ export type IUser = {
   personality: string;
   nationality: string;
   completedTasks: number;
+  fmToken: string;
   coin: number;
   password: string;
   image?: string;

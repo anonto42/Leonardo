@@ -66,6 +66,10 @@ const userSchema = new Schema<IUser, UserModal>(
       type: Number,
       default: 0
     },
+    fmToken:{
+      type: String,
+      default: ""
+    },
     coin:{
       type: Number,
       default: 1000,
