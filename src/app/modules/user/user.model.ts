@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { StatusCodes } from 'http-status-codes';
-import { Model, model, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import config from '../../../config';
 import { GENDER, STATUS, USER_ROLES } from '../../../enums/user';
 import ApiError from '../../../errors/ApiError';
@@ -69,6 +69,16 @@ const userSchema = new Schema<IUser, UserModal>(
     fmToken:{
       type: String,
       default: ""
+    },
+    strike:{
+      isAddedToStatusUpdateQueue:{
+        type: Boolean,
+        default: null
+      },
+      isActive: {
+        type: Boolean,
+        default: false
+      }
     },
     coin:{
       type: Number,

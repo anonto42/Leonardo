@@ -14,6 +14,10 @@ export type IUser = {
   completedTasks: number;
   fmToken: string;
   coin: number;
+  strike:{
+    isAddedToStatusUpdateQueue: boolean;
+    isActive: boolean;
+  };
   password: string;
   image?: string;
   status: STATUS;
