@@ -24,7 +24,7 @@ const loginUserFromDB = async (payload: ILoginData) => {
   const { email, password,fmToken } = payload;
   const isExistUser = await User
     .findOne({ email })
-    .select('+password -createdAt -updatedAt -status -coin -completedTasks')
+    .select('+password -createdAt -updatedAt -status -coin -completedTasks -strike')
     .lean();
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
@@ -80,12 +80,18 @@ const loginUserFromDB = async (payload: ILoginData) => {
     isExistUser._id,
     {
       fmToken
-    }
+    },
+    { new: true }
   )
-  isExistUser.password = '';
-  isExistUser.authentication = undefined;
 
-  return { accessToken: createToken, refreshToken, user: isExistUser };
+  isExistUser.password = '';
+  delete isExistUser.authentication;
+  
+  return { 
+    accessToken: createToken, 
+    refreshToken, 
+    // user: isExistUser 
+  };
 };
 
 // refresh access token
