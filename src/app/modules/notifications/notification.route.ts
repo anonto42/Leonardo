@@ -11,13 +11,18 @@ router
     .route("/")
     .get(
         auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-        validateRequest( NotificationValidation.getNotificationValidation ),
+        validateRequest(NotificationValidation.getNotificationValidation),
         NotificationController.getNotifications
     )
     .patch(
-        auth(USER_ROLES.USER,USER_ROLES.ADMIN),
+        auth(USER_ROLES.USER, USER_ROLES.ADMIN),
         validateRequest(NotificationValidation.updateStatusNotificationValidation),
         NotificationController.updateNotificationStatus
+    )
+    .delete(
+        auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+        validateRequest(NotificationValidation.updateStatusNotificationValidation),
+        NotificationController.deleteNotifications
     )
 
 export const NotificationRoutes = router

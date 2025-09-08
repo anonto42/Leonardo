@@ -38,7 +38,25 @@ const updateNotificationStatus = catchAsync(
   }
 );
 
+const deleteNotifications = catchAsync(
+  async (req: Request | any, res: Response, next: NextFunction) => {
+
+    const { id } = req.user
+    const ids = req.body.ids
+
+    const result = await NotificationServices.deleteNotifications(id, ids );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Successfully deleted the notifications!',
+      data: result,
+    });
+  }
+);
+
 export const NotificationController = {
-    getNotifications,
-    updateNotificationStatus
+  getNotifications,
+  updateNotificationStatus,
+  deleteNotifications
 }

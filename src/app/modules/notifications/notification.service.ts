@@ -1,25 +1,5 @@
 import { Notification } from "./notification.model";
-import { Types } from "mongoose";
-
-const createNotification = async ({
-  forUser,
-  fromUser,
-  type,
-  message,
-}: {
-  forUser: Types.ObjectId;
-  fromUser?: Types.ObjectId;
-  type: string;
-  message: string;
-}) => {
-  const notification = await Notification.create({
-    for: forUser,
-    from: fromUser,
-    type,
-    message,
-  });
-  return notification;
-}
+import mongoose from "mongoose";
 
 interface NotificationOptions {
   page?: number;
@@ -51,18 +31,48 @@ const markNotificationsRead = async (
   userId: string,
   ids?: string[]
 ) => {
-  const filter = ids
-    ? { for: userId, _id: { $in: ids.map(id => new Types.ObjectId(id)) }, isRead: false }
-    : { for: userId, isRead: false };
 
-  const result = await Notification.updateMany(filter, {
-    $set: { isRead: true, readAt: new Date( Date.now() ) },
-  });
+  //Convert the ids to mongoodb ObjectID
+  const objIds = ids?.map( e => new mongoose.Types.ObjectId(e));
 
-  return result.modifiedCount;
+  //Update the notifications status to isRead = true
+  const result = await Notification.updateMany({
+    for: new mongoose.Types.ObjectId(userId),
+    _id:{
+      $in: objIds
+    },
+      isRead: false
+    }, {
+      $set: { isRead: true, readAt: new Date( Date.now() ) },
+    }
+  );
+
+  //Response the count of updated document
+  return { totalUpdated: result.modifiedCount };
+};
+
+const deleteNotifications = async (
+  userID: string,
+  ids: string[]
+) => {
+  //Convert id't in to mongodb object id 
+  const userObjId = new mongoose.Types.ObjectId(userID);
+  const notificationsIds = ids.map( e => new mongoose.Types.ObjectId(e));
+
+  //Find and delete 
+  const deletedCount = await Notification.deleteMany({
+    for: userObjId,
+    _id: {
+      $in: notificationsIds
+    }
+  })
+
+  //Return the total deleted count
+  return { totalDeleted: deletedCount.deletedCount }
 };
 
 export const NotificationServices = {
-    getNotifications,
-    markNotificationsRead
+  getNotifications,
+  markNotificationsRead,
+  deleteNotifications
 }
