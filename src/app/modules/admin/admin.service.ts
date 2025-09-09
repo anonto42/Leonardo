@@ -126,7 +126,7 @@ const policyCreate = async (
 }
 
 const overViewData = async (
-  year: number = 2025,
+  year: number = new Date().getFullYear(),
 ) => {
 
   const totalUsers = await User.countDocuments(); // Get total users
