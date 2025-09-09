@@ -1,4 +1,4 @@
-import { Model, Types } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 
 export type ITask = {
   taskName: string;
@@ -9,7 +9,7 @@ export type ITask = {
   createdBy: Types.ObjectId;
   isComplete: boolean;
   isInStrick: boolean;
-};
+} & Document;
 
 export type TaskModel = {
   isArray(token: string): any;

@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { STATUS, USER_ROLES } from '../../../enums/user';
 
 export type IUser = {
@@ -27,7 +27,7 @@ export type IUser = {
     oneTimeCode: number;
     expireAt: Date;
   };
-};
+}  & Document;
 
 export type UserModal = {
   isValidUser(id: string):any;

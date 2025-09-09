@@ -4,6 +4,19 @@ import { User } from "../user/user.model";
 import { Notification } from "../notifications/notification.model";
 import { ITask } from "../task/task.interface";
 import { messageSend } from "../../../helpers/fireBaseHelper";
+import { RedisDB } from "./redis";
+import { io } from "socket.io-client"
+import { configDotenv } from "dotenv";
+import { Document } from "mongoose";
+import { IUser } from "../user/user.interface";
+
+configDotenv({path:"./.env"})
+
+const socket = io( `http://${process.env.IP_ADDRESS}:${process.env.PORT}`)
+
+socket.on("connect", () => {
+  console.log("Worker connected to Socket.IO server, id:", socket.id);
+});
 
 export default async function worker(job: Job) {
 
@@ -20,17 +33,32 @@ export default async function worker(job: Job) {
         { new: true }
       ).lean() as ITask;
 
-      const user = await User.findById(task.createdBy);
+      const user = await User.findById(task.createdBy) as IUser & Document;
       if (!user) return console.log("User not found");
       user.completedTasks = user.completedTasks + 1;
       await user?.save();
 
       // Notification send
       try {
+        
         // Notification created on the DB
         await Notification.create({
             for: task?.createdBy,
             message: `Your ${task.taskName} task was completed!`
+        });
+
+        // Send on Socket
+        const socketId = await RedisDB.get(`user:${user._id}`);
+        
+        socket.emit("resend", {
+            type: "task-complete",
+            userId: user?._id,
+            message: `Your ${task.taskName} task was completed!`,
+            data: {
+                socketId,
+                taskId: task._id,
+                completedAt: new Date()
+            }
         });
 
         // Send by Firebase
@@ -41,9 +69,6 @@ export default async function worker(job: Job) {
                 body: `${ user?.name } your task ${ task.taskName } was complited now.` 
             }
         })
-
-        // Send on Socket
-        
       } catch (error) {
         console.log(error)
       }
@@ -60,15 +85,28 @@ export default async function worker(job: Job) {
                 "strike.isAddedToStatusUpdateQueue": false
             },
             { new: true }
-        );
+        ) as IUser;
 
         // Notification send
         try {
 
             // Notification created on the DB
-            const notification = await Notification.create({
+            await Notification.create({
                 for: user?._id,
                 message: `Your task ${user?.name}'s time up`
+            });
+
+            // Send on Socket
+            const socketId = await RedisDB.get(`user:${user?._id}`);
+            
+            socket.emit("resend", {
+                type: "strikd-status-change",
+                userId: user._id,
+                message: `${user.name} your strik was removed`,
+                data: {
+                    socketId,
+                    completedAt: new Date()
+                }
             });
 
             // Send by Firebase
@@ -76,11 +114,9 @@ export default async function worker(job: Job) {
                 token: user?.fmToken!,
                 notification:{
                     title: `${user?.name} your strike was removed`,
-                    body: ""
+                    body: `${ user?.name } your account strike was complitedly removed.`
                 }
-            })
-
-            // Send on Socket
+            });
 
         } catch (error) {
             console.log(error)

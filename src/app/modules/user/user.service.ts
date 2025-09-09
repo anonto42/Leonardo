@@ -96,6 +96,9 @@ const getUserProfileFromDB = async (
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   };
 
+  delete isExistUser.strike;
+  delete isExistUser.fmToken;
+
   return isExistUser;
 };
 
