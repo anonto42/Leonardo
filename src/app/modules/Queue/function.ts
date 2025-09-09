@@ -12,8 +12,8 @@ import { IUser } from "../user/user.interface";
 
 configDotenv({path:"./.env"})
 
+//Socket setup for the update send
 const socket = io( `http://${process.env.IP_ADDRESS}:${process.env.PORT}`)
-
 socket.on("connect", () => {
   console.log("Worker connected to Socket.IO server, id:", socket.id);
 });
@@ -40,7 +40,7 @@ export default async function worker(job: Job) {
 
       // Notification send
       try {
-        
+
         // Notification created on the DB
         await Notification.create({
             for: task?.createdBy,
