@@ -4,6 +4,23 @@ import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { AdminService } from './admin.service';
 
+const overviewController = catchAsync(async (
+  req: Request, 
+  res: Response
+) => {
+
+  const { chartOfYear }: { chartOfYear?: number} = req.query;
+  
+  const result = await AdminService.overViewData( chartOfYear );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Successfully get overview data!",
+    data: result,
+  });
+})
+
 const getUsersController = catchAsync(async (
   req: Request, 
   res: Response
@@ -147,5 +164,6 @@ export const AdminController = {
   createConditonController,
   getConditonController,
   createPolicyController,
-  getPolicyontroller
+  getPolicyontroller,
+  overviewController
 };

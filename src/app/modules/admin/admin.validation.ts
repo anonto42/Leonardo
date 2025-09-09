@@ -39,7 +39,16 @@ const createConditionStatusZodSchema = z.object({
   }).strict().optional(),
 })
 
+const overviewZodSchema = z.object({
+  params: z.object({}).strict().optional(),
+  query: z.object({
+    chartOfYear: z.coerce.number().optional()
+  }).strict().optional(),
+  body: z.object({}).strict().optional(),
+})
+
 export const AdminValidation = {
+  overviewZodSchema,
   allUsersZodSchema,
   getUserZodSchema,
   updateUserStatusZodSchema,

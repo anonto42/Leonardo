@@ -7,14 +7,12 @@ import { AdminValidation } from './admin.validation';
 
 const router = express.Router();
 
-
-//This will the overview route for admin panel
 router
   .route('/')
-  .post(
+  .get(
     auth(USER_ROLES.ADMIN),
-    validateRequest(AdminValidation.allUsersZodSchema),
-    // AdminController.defaultFunction
+    validateRequest(AdminValidation.overviewZodSchema),
+    AdminController.overviewController
   );
 
 router

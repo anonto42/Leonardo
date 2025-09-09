@@ -4,6 +4,7 @@ import { User } from '../user/user.model';
 import { TGetAllUsers } from './admin.type';
 import { STATUS, USER_ROLES } from '../../../enums/user';
 import { Condition } from '../conditionAndPolicys/conditionsAndpolicy.modle';
+import { Task } from '../task/task.model';
 
 const allUsers = async (
   { page = 1, limit = 10 }: TGetAllUsers
@@ -124,11 +125,65 @@ const policyCreate = async (
   return "DONE"
 }
 
+const overViewData = async (
+  year: number = 2025,
+) => {
+
+  const totalUsers = await User.countDocuments(); // Get total users
+  const tasks = await Task.aggregate([ //Take total tasks created by defrent users
+    {
+      $group:{
+        _id: "$createdBy",
+        count: { $sum: 1 }
+      }
+    }
+  ]);
+
+  const monthlyUsers = await User.aggregate([
+    {
+      $match: {
+        createdAt: {
+          $gte: new Date(`${year}-01-01`),
+          $lt: new Date(`${year + 1}-01-01`)
+        }
+        // createdAt: new Date(`${year}-01-01`)
+      }
+    },
+    {
+      $group: {
+        _id: { month: { $month: "$createdAt" } }, // group by month
+        totalUsers: { $sum: 1 } // count users per month
+      }
+    },
+    {
+      $sort: { "_id.month": 1 } // sort by month
+    }
+  ]);
+
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  // Fill months with 0 if no users were created
+  const chartData = months.map((m, index) => {
+    const monthData = monthlyUsers.find(d => d._id.month === index + 1);
+    return {
+      month: m,
+      total: monthData ? monthData.totalUsers : 0
+    };
+  });
+
+  return {
+    totalUsers,
+    activeUsers: tasks.length,
+    inActiveUser: totalUsers - tasks.length,
+    chartData
+  }
+}
+
 const getCondition = async () => await Condition.findOne({type: "TERMS"}).select("content -_id").lean().exec();
 const getPolicy = async () => await Condition.findOne({type: "POLICY"}).select("content -_id").lean().exec();
  
 export const AdminService = {
-  allUsers, getPolicy,
+  allUsers, getPolicy,overViewData,
   getUserById, policyCreate,
   updateUserStatus: setUserStatus,
   deleteUser, getCondition, conditionCreate,
