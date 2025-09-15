@@ -45,9 +45,9 @@ const getHistoryOfTasks = catchAsync(async (
   res: Response
 ) => {
   
-  const { page, limit }: { page?: number, limit?: number} = req.query;
+  const { page, limit, date }: { page?: number, limit?: number, date?: string} = req.query;
   const user = req.user;
-  const result = await TaskService.getHistoryData(user,page,limit);
+  const result = await TaskService.getHistoryData(user,page,limit, date);
 
   sendResponse(res, {
     success: true,

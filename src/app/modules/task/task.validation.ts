@@ -14,7 +14,8 @@ const createTaskZodSchema = z.object({
 const getTaskZodSchema = z.object({
   query: z.object({
     page: z.coerce.number().optional(),
-    limit: z.coerce.number().optional()
+    limit: z.coerce.number().optional(),
+    date: z.any().optional()
   }).strict(),
 });
 

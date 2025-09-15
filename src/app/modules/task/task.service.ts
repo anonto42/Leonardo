@@ -194,11 +194,11 @@ const getCategoryDataForTask = async (
   limit = 10
 ) => {
 
-  console.log(
-    new Date( 
-      Date.now() + 4 * 60 * 1000
-    )
-  )
+  // console.log(
+  //   new Date( 
+  //     Date.now() + 4 * 60 * 1000
+  //   )
+  // )
 
   return await Category
     .find()
@@ -211,12 +211,18 @@ const getCategoryDataForTask = async (
 const getHistoryData = async (
   payload: JwtPayload,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  date: string = ""
 ) => {
   const { id } = payload;
+  const cleanDate = date.split(" ")[0]; 
 
-  const historyTask = await Task
-  .find({
+  const dateFormeted = new Date(cleanDate);
+  const startOfDay = new Date(dateFormeted.setHours(0, 0, 0, 0));
+  const endOfDay = new Date(dateFormeted.setHours(23, 59, 59, 999));
+
+  const historyTask = await Task.find({
+    selectDate: { $gte: startOfDay, $lte: endOfDay },
     createdBy: id,
     isComplete: true
   })
