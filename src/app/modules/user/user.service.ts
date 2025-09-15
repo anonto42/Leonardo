@@ -8,6 +8,7 @@ import unlinkFile from '../../../shared/unlinkFile';
 import generateOTP from '../../../util/generateOTP';
 import { IUser } from './user.interface';
 import { User } from './user.model';
+import mongoose from 'mongoose';
 
 const createUserToDB = async (payload: Partial<IUser>): Promise<any> => {
   //set role
@@ -131,8 +132,40 @@ const updateProfileToDB = async (
   return updateDoc;
 };
 
+const deleteProfileToDB = async (
+  user: JwtPayload,
+  payload: any
+) => {
+  const { password } = payload;
+  const { id } = user;
+  const isExistUser = await User.findById(new mongoose.Types.ObjectId(id)).select("+password").lean().exec();
+  
+  if (!isExistUser) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+  }
+
+  if (
+    password &&
+    !(await User.isMatchPassword(password, isExistUser.password))
+  ) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Password is incorrect!');
+  }
+
+  //unlink file here
+  if (payload.image) {
+    if (isExistUser.image) {
+      unlinkFile(isExistUser.image);
+    }
+  }
+
+  await User.deleteOne({ _id: isExistUser._id })
+
+  return "DONE"
+};
+
 export const UserService = {
   createUserToDB,
+  deleteProfileToDB,
   getUserProfileFromDB,
   updateProfileToDB,
 };
