@@ -106,10 +106,11 @@ const conditionCreate = async (
   const condition = await Condition.findOneAndUpdate({type: "TERMS" }, { content: payload}, { new: true }).lean();
 
   if (!condition) {
-    await Condition.create({type: "TERMS",content:payload});
+    const conn = await Condition.create({type: "TERMS",content:payload});
+    return conn.content
   }
 
-  return "DONE"
+  return condition?.content
 }
 
 const policyCreate = async ( 
@@ -119,10 +120,11 @@ const policyCreate = async (
   const condition = await Condition.findOneAndUpdate({type: "POLICY" }, { content: payload}, { new: true }).lean();
 
   if (!condition) {
-    await Condition.create({type: "POLICY",content:payload});
+    const data = await Condition.create({type: "POLICY",content:payload});
+    return data.content
   }
 
-  return "DONE"
+  return condition?.content
 }
 
 const overViewData = async (
