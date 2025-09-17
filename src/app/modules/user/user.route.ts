@@ -19,6 +19,10 @@ router
 
 router
   .route('/')
+  .get(
+    auth( USER_ROLES.USER, USER_ROLES.ADMIN ),
+    UserController.todaysSummery
+  )
   .post(
     fileUploadHandler(),
     validateRequest(UserValidation.createUserZodSchema),

@@ -9,6 +9,8 @@ import generateOTP from '../../../util/generateOTP';
 import { IUser } from './user.interface';
 import { User } from './user.model';
 import mongoose from 'mongoose';
+import { Task } from '../task/task.model';
+import { Category } from '../category/category.model';
 
 const createUserToDB = async (payload: Partial<IUser>): Promise<any> => {
   //set role
@@ -163,8 +165,57 @@ const deleteProfileToDB = async (
   return "DONE"
 };
 
+const todaysSumery = async (payload: JwtPayload) => {
+  const objId = new mongoose.Types.ObjectId(payload.id);
+
+  const user = await User.findById(objId).lean();
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, "User not found!");
+  }
+
+  // Today's start and end
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  // Get all tasks created today
+  const tasks = await Task.find({
+    createdAt: { $gte: startOfDay, $lte: endOfDay },
+  }).lean();
+
+  // Count strict tasks for today
+  const strictTasksCount = await Task.countDocuments({
+    isInStrick: true,
+    selectDate: { $gte: startOfDay, $lte: endOfDay },
+  });
+
+  // Get all unique category IDs from today's tasks
+  const categoryIds = tasks
+    .map((task) => task.category)
+    .filter((id) => id != null);
+
+  // Sum coins from categories
+  let totalCoins = 0;
+  if (categoryIds.length > 0) {
+    const categories = await Category.find({
+      _id: { $in: categoryIds },
+    }).lean();
+
+    totalCoins = categories.reduce((sum, cat) => sum + (cat.coin || 0), 0);
+  }
+
+  return {
+    taskLogged: tasks.length,
+    coinSpent: totalCoins,
+    activeStrike: strictTasksCount,
+  };
+};
+
 export const UserService = {
   createUserToDB,
+  todaysSumery,
   deleteProfileToDB,
   getUserProfileFromDB,
   updateProfileToDB,

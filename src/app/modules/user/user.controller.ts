@@ -71,8 +71,24 @@ const deleteProfile = catchAsync(
   }
 );
 
+const todaysSummery = catchAsync(
+  async (req: Request | any, res: Response, next: NextFunction) => {
+    const user = req.user;
+    
+    const result = await UserService.todaysSumery(user);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Successfully get todays log!',
+      data: result,
+    });
+  }
+);
+
 export const UserController = { 
   createUser, 
+  todaysSummery,
   getUserProfile, 
   updateProfile,
   deleteProfile
