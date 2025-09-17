@@ -21,7 +21,7 @@ const allUsers = async (
       $ne: USER_ROLES.ADMIN
     }
   })
-    .select('name email image createdAt coin completedTasks')
+    .select('name email image createdAt coin completedTasks status')
     .skip(skip)
     .limit(limit)
     .lean();
