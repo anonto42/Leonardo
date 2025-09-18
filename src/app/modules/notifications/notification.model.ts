@@ -34,9 +34,6 @@ const notificationSchema = new Schema<INotification>(
     versionKey: false,
     toJSON: {
       virtuals: true,
-      transform: function (doc, ret) {
-        delete ret._id;
-      },
     },
   }
 );

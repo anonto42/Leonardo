@@ -32,9 +32,6 @@ const categorySchema = new Schema<ICategory>(
     versionKey: false, 
     toJSON: {
       virtuals: true,
-      transform: function (doc, ret) {
-        delete ret._id;
-      },
     },
   }
 );

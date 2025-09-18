@@ -9,7 +9,8 @@ const createAccount = (values: ICreateAccount) => {
         <h2 style="color: #277E16; font-size: 24px; margin-bottom: 20px;">Hello, ${values.name}!</h2>
         <div style="text-align: center;">
             <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">Thank you for registering with us. To complete your account setup, please verify your email by entering the OTP below:</p>
-            <div style="background-color: #277E16; width: 80px; padding: 10px; text-align: center; border-radius: 8px; color: #fff; font-size: 25px; letter-spacing: 2px; margin: 20px auto;">${values.otp}</div>
+            <div style="padding: 10px; text-align: center; border-radius: 8px; color: #fff; font-size: 25px; letter-spacing: 2px; margin: 20px auto;">
+            <p style="background-color: #277E16; padding: 10px;">${values.otp} </p> </div>
             <p style="color: #555; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">This OTP is valid for 3 minutes. Please use it to confirm your email address and activate your account.</p>
             <p style="color: #555; font-size: 16px; line-height: 1.5;">If you did not create an account with us, please ignore this email.</p>
         </div>
@@ -42,7 +43,6 @@ const resetPassword = (values: IResetPassword) => {
   };
   return data;
 };
-
 
 export const serverHome = () => (
   `<!DOCTYPE html>
