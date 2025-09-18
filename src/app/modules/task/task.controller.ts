@@ -27,6 +27,10 @@ const allCategoryes = catchAsync(async (
   req: Request, 
   res: Response
 ) => {
+
+  console.log(
+    new Date( Date.now() + 3 * 60 * 1000 )
+  )
   
   const { page, limit }: { page?: number, limit?: number} = req.query;
 
@@ -86,7 +90,7 @@ const allStrikesTaskController = catchAsync(async (
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: "Successfully get task history!",
+    message: "Successfully get Striks history!",
     data: result,
   });
 });

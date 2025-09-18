@@ -6,6 +6,7 @@ export interface INotification {
   message: string,
   isRead: boolean,
   readAt: Date,
+  type: "coin" | "strick" | "task-complete" | "strikd-status-change"
 }
 
 export type NotificationModel = {

@@ -28,7 +28,7 @@ export default async function worker(job: Job) {
         _id,
         { 
             isComplete: true,
-            isInStrick: false
+            // isInStrick: false
         },
         { new: true }
       ).lean() as ITask;
@@ -44,7 +44,8 @@ export default async function worker(job: Job) {
         // Notification created on the DB
         await Notification.create({
             for: task?.createdBy,
-            message: `Your ${task.taskName} task was completed!`
+            message: `Your ${task.taskName} task was completed!`,
+            type: "task-complete"
         });
 
         // Send on Socket
@@ -93,7 +94,8 @@ export default async function worker(job: Job) {
             // Notification created on the DB
             await Notification.create({
                 for: user?._id,
-                message: `Your task ${user?.name}'s time up`
+                message: `Your task ${user?.name}'s time up`,
+                type: "strikd-status-change"
             });
 
             // Send on Socket

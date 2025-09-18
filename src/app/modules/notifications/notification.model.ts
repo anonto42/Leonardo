@@ -16,7 +16,10 @@ const notificationSchema = new Schema<INotification>(
       type: String, 
       required: true 
     },
-
+    type:{
+      type: String,
+      enum: ["coin" , "strick", "strikd-status-change", "task-complete"]
+    },
     isRead: { 
       type: Boolean, 
       default: false 

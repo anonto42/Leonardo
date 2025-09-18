@@ -7,13 +7,15 @@ import { taskQueue } from '../Queue/taskQueue';
 import { User } from '../user/user.model';
 import { JwtPayload } from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import { Notification } from '../notifications/notification.model';
+import { RedisDB } from '../Queue/redis';
 
 const createTask = async (
   payload: ITask & { taskWillEnd: Date }
 ) => {
 
   const oneDayMs = 24 * 60 * 60 * 1000;
-  const oneHowerMs = 1 * 60 * 1000;
+  const oneHowerMs = 1 * 60 * 60 * 1000;
   // const oneHowerMs = 24 * 60 * 60 * 1000;
   // const oneMinitMS = 1 * 60 * 1000;
 
@@ -50,6 +52,7 @@ const createTask = async (
     // Create the task
     const createdTask = await Task.create({
       ...payload,
+      createdBy: user._id,
       isInStrick: true
     });
     if (!createdTask) {
@@ -78,6 +81,22 @@ const createTask = async (
       )
     }
 
+    const notification = await Notification.create({
+      for: user._id,
+      message: `You receive a strick on task ${payload.taskName}`,
+      type: "strick"
+    })
+
+    //@ts-ignore
+    const io = global.io;
+
+    const socketId = await RedisDB.get(`user:${user._id}`);
+
+    io.to(socketId).emit("notification", {
+      type: notification.type,
+      message: notification.message,
+    })
+
     return {
       message: "Strike Receiced!",
       context: "Extra +2 coins will be deducted for each task in this category."
@@ -90,11 +109,11 @@ const createTask = async (
       createdBy: user._id,
       category: category._id,
       selectDate: payload.selectDate,
-      isComplete: false
+      // isComplete: false
     })
 
     // If this is more the 5 already then do the strike oparation
-    if (taskFind.length > 5) {
+    if (taskFind.length >= 5) {
 
       // Changed the active status
       user.strike.isActive = true
@@ -125,6 +144,7 @@ const createTask = async (
       // Create the task
       const createdTask = await Task.create({
         ...payload,
+        createdBy: user._id,
         isInStrick: true
       });
       if (!createdTask) {
@@ -143,6 +163,22 @@ const createTask = async (
         { _id: createdTask._id },
         { delay }
       )
+
+       const notification = await Notification.create({
+          for: user._id,
+          message: `You receive a strick on task ${payload.taskName}`,
+          type: "strick"
+        })
+
+        //@ts-ignore
+        const io = global.io;
+
+        const socketId = await RedisDB.get(`user:${user._id}`);
+
+        io.to(socketId).emit("notification", {
+          type: notification.type,
+          message: notification.message,
+        })
 
       return {
         message: "Strike Receiced!",
@@ -165,6 +201,7 @@ const createTask = async (
     // Create the task
     const createdTask = await Task.create({
       ...payload,
+      createdBy: user._id,
       isInStrick: false
     });
     if (!createdTask) {
@@ -221,19 +258,38 @@ const getHistoryData = async (
   const startOfDay = new Date(dateFormeted.setHours(0, 0, 0, 0));
   const endOfDay = new Date(dateFormeted.setHours(23, 59, 59, 999));
 
-  const historyTask = await Task.find({
-    selectDate: { $gte: startOfDay, $lte: endOfDay },
-    createdBy: id,
-    isComplete: true
-  })
-  .select("taskName createdAt category")
-  .populate({
-    path: "category",
-    select: "name action image coin -_id"
-  })
-  .skip(( page - 1) * limit)
-  .limit( limit )
-  .lean();
+  let historyTask;
+  
+  if (date != "") {
+    historyTask = await Task.find({
+     selectDate: { $gte: startOfDay, $lte: endOfDay },
+     createdBy: id,
+     isComplete: true
+   })
+  //  .select("taskName createdAt category")
+   .select(" -updatedAt")
+   .populate({
+     path: "category",
+     select: "name action image coin -_id"
+   })
+   .skip(( page - 1) * limit)
+   .limit( limit )
+   .lean();
+    
+  }else {
+    historyTask = await Task.find({
+     createdBy: id,
+     isComplete: true
+   })
+   .select(" -updatedAt")
+   .populate({
+     path: "category",
+     select: "name action image coin -_id"
+   })
+   .skip(( page - 1) * limit)
+   .limit( limit )
+   .lean();
+  }
 
   return historyTask;
 }
